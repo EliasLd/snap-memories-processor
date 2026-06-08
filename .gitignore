@@ -4,3 +4,6 @@ json/
 html/
 memories/
 index.html
+
+*.zip
+inputs/
