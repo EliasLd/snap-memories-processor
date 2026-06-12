@@ -2,11 +2,13 @@ package cli
 
 import (
 	"fmt"
+	"path/filepath"
 	"runtime"
 
 	"github.com/spf13/cobra"
 
 	"github.com/EliasLd/snap-memories-processor/internal/archive"
+	"github.com/EliasLd/snap-memories-processor/internal/memory"
 )
 
 type Config struct {
@@ -42,22 +44,65 @@ var processCmd = &cobra.Command{
 			return err
 		}
 
-		fmt.Printf("Input:   %s\n", cfg.InputDir)
-		fmt.Printf("Output:  %s\n", cfg.OutputDir)
-		fmt.Printf("Workers: %d\n\n", cfg.Workers)
-
-		fmt.Printf(
-			"\nExtracted %d archive(s)\n\n",
-			len(extractions),
-		)
+		var allMetadata int
+		var allMedia int
+		var totalMatches int
 
 		for _, extraction := range extractions {
-			fmt.Printf(
-				"- %s -> %s\n",
-				extraction.ArchiveName,
+
+			jsonPath := filepath.Join(
 				extraction.Path,
+				"json",
+				"memories_history.json",
 			)
+
+			metadata, err := memory.LoadMetadata(
+				jsonPath,
+			)
+			if err != nil {
+				return err
+			}
+
+			allMetadata += len(metadata)
+
+			memoriesDir := filepath.Join(
+				extraction.Path,
+				"memories",
+			)
+
+			medias, err := memory.ScanMemories(
+				memoriesDir,
+			)
+			if err != nil {
+				return err
+			}
+
+			allMedia += len(medias)
+
+			_, matches := memory.MatchMetadata(
+				medias,
+				metadata,
+			)
+
+			totalMatches += matches
 		}
+
+		fmt.Println()
+
+		fmt.Printf(
+			"Metadata loaded : %d\n",
+			allMetadata,
+		)
+
+		fmt.Printf(
+			"Media found     : %d\n",
+			allMedia,
+		)
+
+		fmt.Printf(
+			"Matches         : %d\n",
+			totalMatches,
+		)
 
 		return nil
 	},

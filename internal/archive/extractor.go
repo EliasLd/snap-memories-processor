@@ -78,6 +78,14 @@ func Extract(
 		if err != nil {
 			return model.Extraction{}, err
 		}
+
+		if err := os.Chtimes(
+			target,
+			file.Modified,
+			file.Modified,
+		); err != nil {
+			return model.Extraction{}, err
+		}
 	}
 
 	return model.Extraction{
