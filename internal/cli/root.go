@@ -32,14 +32,31 @@ var processCmd = &cobra.Command{
 			return err
 		}
 
+		tmpDir := "./tmp/extracted"
+
+		extractions, err := archive.ExtractAll(
+			archives,
+			tmpDir,
+		)
+		if err != nil {
+			return err
+		}
+
 		fmt.Printf("Input:   %s\n", cfg.InputDir)
 		fmt.Printf("Output:  %s\n", cfg.OutputDir)
 		fmt.Printf("Workers: %d\n\n", cfg.Workers)
 
-		fmt.Printf("Found %d archive(s)\n\n", len(archives))
+		fmt.Printf(
+			"\nExtracted %d archive(s)\n\n",
+			len(extractions),
+		)
 
-		for _, archive := range archives {
-			fmt.Printf("- %s\n", archive.Name)
+		for _, extraction := range extractions {
+			fmt.Printf(
+				"- %s -> %s\n",
+				extraction.ArchiveName,
+				extraction.Path,
+			)
 		}
 
 		return nil
