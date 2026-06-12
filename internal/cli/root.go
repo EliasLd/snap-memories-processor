@@ -2,7 +2,6 @@ package cli
 
 import (
 	"fmt"
-	"path/filepath"
 	"runtime"
 
 	"github.com/spf13/cobra"
@@ -43,66 +42,23 @@ var processCmd = &cobra.Command{
 		if err != nil {
 			return err
 		}
-
-		var allMetadata int
-		var allMedia int
-		var totalMatches int
-
-		for _, extraction := range extractions {
-
-			jsonPath := filepath.Join(
-				extraction.Path,
-				"json",
-				"memories_history.json",
-			)
-
-			metadata, err := memory.LoadMetadata(
-				jsonPath,
-			)
-			if err != nil {
-				return err
-			}
-
-			allMetadata += len(metadata)
-
-			memoriesDir := filepath.Join(
-				extraction.Path,
-				"memories",
-			)
-
-			medias, err := memory.ScanMemories(
-				memoriesDir,
-			)
-			if err != nil {
-				return err
-			}
-
-			allMedia += len(medias)
-
-			_, matches := memory.MatchMetadata(
-				medias,
-				metadata,
-			)
-
-			totalMatches += matches
+		collection, err := memory.BuildCollection(
+			extractions,
+		)
+		if err != nil {
+			return err
 		}
+
+		stats := memory.ComputeStats(
+			collection,
+		)
 
 		fmt.Println()
 
-		fmt.Printf(
-			"Metadata loaded : %d\n",
-			allMetadata,
-		)
-
-		fmt.Printf(
-			"Media found     : %d\n",
-			allMedia,
-		)
-
-		fmt.Printf(
-			"Matches         : %d\n",
-			totalMatches,
-		)
+		fmt.Printf("Total media  : %d\n", stats.Total)
+		fmt.Printf("Videos       : %d\n", stats.Videos)
+		fmt.Printf("Images       : %d\n", stats.Images)
+		fmt.Printf("With overlay : %d\n", stats.WithOverlay)
 
 		return nil
 	},
