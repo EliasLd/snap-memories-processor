@@ -3,11 +3,13 @@ package cli
 import (
 	"fmt"
 	"runtime"
+	"time"
 
 	"github.com/spf13/cobra"
 
 	"github.com/EliasLd/snap-memories-processor/internal/archive"
 	"github.com/EliasLd/snap-memories-processor/internal/memory"
+	"github.com/EliasLd/snap-memories-processor/internal/model"
 	"github.com/EliasLd/snap-memories-processor/internal/processor"
 )
 
@@ -60,11 +62,24 @@ var processCmd = &cobra.Command{
 		fmt.Printf("Videos       : %d\n", stats.Videos)
 		fmt.Printf("Images       : %d\n", stats.Images)
 		fmt.Printf("With overlay : %d\n", stats.WithOverlay)
+		fmt.Println()
+
+		start := time.Now()
+
+		progress := make(
+			chan model.Progress,
+			100,
+		)
+
+		go processor.RenderProgress(
+			progress,
+		)
 
 		results := processor.ProcessCollection(
 			collection,
 			cfg.OutputDir,
 			cfg.Workers,
+			progress,
 		)
 
 		success := processor.CountSuccess(
@@ -75,7 +90,17 @@ var processCmd = &cobra.Command{
 			results,
 		)
 
+		duration := time.Since(
+			start,
+		)
+
 		fmt.Println()
+		fmt.Println()
+
+		fmt.Printf(
+			"Duration      : %s\n",
+			duration.Round(time.Second),
+		)
 
 		fmt.Printf(
 			"Processed     : %d\n",
