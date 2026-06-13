@@ -2,6 +2,7 @@ package memory
 
 import (
 	"fmt"
+	"os"
 	"path/filepath"
 
 	"github.com/EliasLd/snap-memories-processor/internal/model"
@@ -11,26 +12,38 @@ func BuildCollection(
 	extractions []model.Extraction,
 ) ([]model.Media, error) {
 
-	var collection []model.Media
+	var jsonPath string
 
 	for _, extraction := range extractions {
 
-		jsonPath := filepath.Join(
+		candidate := filepath.Join(
 			extraction.Path,
 			"json",
 			"memories_history.json",
 		)
 
-		metadata, err := LoadMetadata(
-			jsonPath,
-		)
-		if err != nil {
-			return nil, fmt.Errorf(
-				"load metadata from %s: %w",
-				extraction.ArchiveName,
-				err,
-			)
+		if _, err := os.Stat(candidate); err == nil {
+			jsonPath = candidate
+			break
 		}
+	}
+
+	if jsonPath == "" {
+		return nil, fmt.Errorf(
+			"memories_history.json not found",
+		)
+	}
+
+	metadata, err := LoadMetadata(
+		jsonPath,
+	)
+	if err != nil {
+		return nil, err
+	}
+
+	var allMedia []model.Media
+
+	for _, extraction := range extractions {
 
 		memoriesDir := filepath.Join(
 			extraction.Path,
@@ -48,26 +61,25 @@ func BuildCollection(
 			)
 		}
 
-		medias, matches := MatchMetadata(
-			medias,
-			metadata,
-		)
-
-		if matches != len(medias) {
-
-			return nil, fmt.Errorf(
-				"%s: matched %d/%d media",
-				extraction.ArchiveName,
-				matches,
-				len(medias),
-			)
-		}
-
-		collection = append(
-			collection,
+		allMedia = append(
+			allMedia,
 			medias...,
 		)
 	}
 
-	return collection, nil
+	allMedia, matches := MatchMetadata(
+		allMedia,
+		metadata,
+	)
+
+	if matches != len(allMedia) {
+
+		return nil, fmt.Errorf(
+			"matched %d/%d media",
+			matches,
+			len(allMedia),
+		)
+	}
+
+	return allMedia, nil
 }

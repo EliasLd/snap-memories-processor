@@ -8,6 +8,7 @@ import (
 
 	"github.com/EliasLd/snap-memories-processor/internal/archive"
 	"github.com/EliasLd/snap-memories-processor/internal/memory"
+	"github.com/EliasLd/snap-memories-processor/internal/processor"
 )
 
 type Config struct {
@@ -59,6 +60,48 @@ var processCmd = &cobra.Command{
 		fmt.Printf("Videos       : %d\n", stats.Videos)
 		fmt.Printf("Images       : %d\n", stats.Images)
 		fmt.Printf("With overlay : %d\n", stats.WithOverlay)
+
+		results := processor.ProcessCollection(
+			collection,
+			cfg.OutputDir,
+			cfg.Workers,
+		)
+
+		success := processor.CountSuccess(
+			results,
+		)
+
+		failures := processor.CountFailures(
+			results,
+		)
+
+		fmt.Println()
+
+		fmt.Printf(
+			"Processed     : %d\n",
+			success,
+		)
+
+		fmt.Printf(
+			"Failed        : %d\n",
+			failures,
+		)
+
+		if failures > 0 {
+
+			err := processor.WriteErrorLog(
+				results,
+				cfg.OutputDir,
+			)
+			if err != nil {
+				return err
+			}
+
+			fmt.Printf(
+				"\nErrors written to %s/errors.log\n",
+				cfg.OutputDir,
+			)
+		}
 
 		return nil
 	},
