@@ -10,6 +10,7 @@ func ProcessAll(
 	medias []model.Media,
 	outputDir string,
 	workers int,
+	writeGPS bool,
 	progress chan<- model.Progress,
 ) []model.ProcessResult {
 
@@ -34,10 +35,28 @@ func ProcessAll(
 
 			for media := range jobs {
 
-				results <- ProcessMedia(
+				result := ProcessMedia(
 					media,
 					outputDir,
 				)
+
+				if result.Success &&
+					writeGPS {
+
+					err := WriteGPSMetadata(
+						result.OutputFile,
+						media.Metadata.Latitude,
+						media.Metadata.Longitude,
+					)
+
+					if err != nil {
+
+						result.Success = false
+						result.Error = err.Error()
+					}
+				}
+
+				results <- result
 			}
 		}()
 	}

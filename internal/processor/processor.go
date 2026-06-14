@@ -8,6 +8,7 @@ func ProcessCollection(
 	collection []model.Media,
 	outputDir string,
 	workers int,
+	writeGPS bool,
 	progress chan<- model.Progress,
 ) []model.ProcessResult {
 
@@ -15,6 +16,7 @@ func ProcessCollection(
 		collection,
 		outputDir,
 		workers,
+		writeGPS,
 		progress,
 	)
 }
