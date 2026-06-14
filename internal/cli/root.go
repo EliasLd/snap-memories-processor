@@ -17,6 +17,8 @@ type Config struct {
 	InputDir  string
 	OutputDir string
 	Workers   int
+
+	WriteGPS bool
 }
 
 var cfg Config
@@ -52,6 +54,14 @@ var processCmd = &cobra.Command{
 			return err
 		}
 
+		if cfg.WriteGPS &&
+			!processor.HasExiftool() {
+
+			return fmt.Errorf(
+				"--gps requires exiftool to be installed",
+			)
+		}
+
 		stats := memory.ComputeStats(
 			collection,
 		)
@@ -79,6 +89,7 @@ var processCmd = &cobra.Command{
 			collection,
 			cfg.OutputDir,
 			cfg.Workers,
+			cfg.WriteGPS,
 			progress,
 		)
 
@@ -159,6 +170,13 @@ func init() {
 		"w",
 		runtime.NumCPU(),
 		"Number of workers",
+	)
+
+	processCmd.Flags().BoolVar(
+		&cfg.WriteGPS,
+		"gps",
+		false,
+		"Write GPS metadata using exiftool",
 	)
 
 	processCmd.MarkFlagRequired("input")

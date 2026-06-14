@@ -22,7 +22,9 @@ type Media struct {
 }
 
 type Job struct {
-	Media Media
+	Media     Media
+	OutputDir string
+	WriteGPS  bool
 }
 
 type Result struct {
