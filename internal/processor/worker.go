@@ -43,11 +43,26 @@ func ProcessAll(
 				if result.Success &&
 					writeGPS {
 
-					err := WriteGPSMetadata(
-						result.OutputFile,
-						media.Metadata.Latitude,
-						media.Metadata.Longitude,
-					)
+					var err error
+
+					switch media.Metadata.MediaType {
+
+					case "Image":
+
+						err = WriteGPSMetadata(
+							result.OutputFile,
+							media.Metadata.Latitude,
+							media.Metadata.Longitude,
+						)
+
+					case "Video":
+
+						err = WriteVideoGPSMetadata(
+							result.OutputFile,
+							media.Metadata.Latitude,
+							media.Metadata.Longitude,
+						)
+					}
 
 					if err != nil {
 
@@ -55,7 +70,6 @@ func ProcessAll(
 						result.Error = err.Error()
 					}
 				}
-
 				results <- result
 			}
 		}()
