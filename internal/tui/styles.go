@@ -5,6 +5,19 @@ import (
 )
 
 var (
+	selectedStyle = lipgloss.NewStyle().
+			Bold(true)
+
+	subtitleStyle = lipgloss.NewStyle().
+			Faint(true)
+
+	buttonStyle = lipgloss.NewStyle().
+			Padding(0, 2)
+
+	buttonSelectedStyle = lipgloss.NewStyle().
+				Bold(true).
+				Padding(0, 5)
+
 	titleStyle = lipgloss.NewStyle().
 			Bold(true)
 
@@ -12,5 +25,6 @@ var (
 			Faint(true)
 
 	quoteStyle = lipgloss.NewStyle().
-			Italic(true)
+			Italic(true).
+			Faint(true)
 )
