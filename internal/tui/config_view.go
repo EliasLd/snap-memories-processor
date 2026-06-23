@@ -10,6 +10,19 @@ func configView(
 	m Model,
 ) string {
 
+	input := fmt.Sprintf(
+		"Input directory: %s",
+		m.inputPath,
+	)
+
+	if m.focus == FocusInput {
+		input = "> " + input
+		input = selectedStyle.Render(input)
+
+	} else {
+		input = subtitleStyle.Render(input)
+	}
+
 	gps := "[ ] Preserve GPS metadata"
 
 	if m.gpsEnabled {
@@ -53,7 +66,8 @@ func configView(
 		quoteStyle.Render(
 			"Memories are important, let's keep them.",
 		),
-
+		"",
+		input,
 		"",
 		gps,
 		"",
