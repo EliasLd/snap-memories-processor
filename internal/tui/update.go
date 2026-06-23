@@ -14,6 +14,39 @@ func Update(
 		m.width = msg.Width
 		m.height = msg.Height
 
+	}
+
+	if m.state == StateFilePicker {
+
+		switch msg := msg.(type) {
+
+		case tea.KeyMsg:
+
+			switch msg.String() {
+
+			case "q":
+				m.state = StateConfig
+
+			}
+
+		}
+
+		var cmd tea.Cmd
+
+		m.filepicker, cmd = m.filepicker.Update(msg)
+
+		if didSelect, path := m.filepicker.DidSelectFile(msg); didSelect {
+
+			m.inputPath = path
+			m.state = StateConfig
+		}
+
+		return m, cmd
+	}
+
+	// Config state
+	switch msg := msg.(type) {
+
 	case tea.KeyMsg:
 
 		switch msg.String() {
@@ -54,6 +87,22 @@ func Update(
 		case " ", "enter":
 
 			switch m.focus {
+
+			case FocusInput:
+
+				m.state = StateFilePicker
+
+				cmd := m.resetFilepicker()
+
+				return m, tea.Batch(
+					cmd,
+					func() tea.Msg {
+						return tea.WindowSizeMsg{
+							Width:  m.width,
+							Height: m.height,
+						}
+					},
+				)
 
 			case FocusGPS:
 

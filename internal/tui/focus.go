@@ -3,9 +3,10 @@ package tui
 type Focus int
 
 const (
-	FocusGPS Focus = iota
+	FocusInput Focus = iota
+	FocusGPS
 	FocusWorkers
 	FocusStart
-)
 
-const FocusCount = 3
+	FocusCount
+)
