@@ -1,6 +1,9 @@
 package tui
 
-import tea "github.com/charmbracelet/bubbletea"
+import (
+	"github.com/EliasLd/snap-memories-processor/internal/model"
+	tea "github.com/charmbracelet/bubbletea"
+)
 
 func Update(
 	msg tea.Msg,
@@ -111,6 +114,25 @@ func Update(
 			case FocusStart:
 
 				m.state = StateProcessing
+
+				progressChan := make(
+					chan model.Progress,
+				)
+
+				m.progressChan = progressChan
+
+				return m,
+					tea.Batch(
+						StartProcessing(
+							m.inputPath,
+							m.gpsEnabled,
+							m.workers,
+							progressChan,
+						),
+						WaitProgress(
+							progressChan,
+						),
+					)
 			}
 		}
 	}

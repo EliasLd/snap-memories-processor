@@ -24,6 +24,8 @@ type Model struct {
 
 	filepicker filepicker.Model
 
+	progressChan chan model.Progress
+
 	processed int
 	total     int
 
