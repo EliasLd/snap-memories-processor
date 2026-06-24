@@ -17,6 +17,29 @@ func Update(
 		m.width = msg.Width
 		m.height = msg.Height
 
+	case ProgressMsg:
+
+		m.processed = msg.Processed
+		m.total = msg.Total
+
+		return m,
+			WaitProgress(
+				m.progressChan,
+			)
+
+	case FinishedMsg:
+
+		m.state = StateFinished
+		m.summary = msg.summary
+
+		return m, nil
+
+	case ErrorMsg:
+
+		m.state = StateError
+
+		return m, nil
+
 	}
 
 	if m.state == StateFilePicker {

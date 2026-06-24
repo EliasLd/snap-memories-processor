@@ -11,7 +11,10 @@ func View(m Model) string {
 		return filepickerView(m)
 
 	case StateProcessing:
-		return "Processing..."
+		return processingView(m)
+
+	case StateFinished:
+		return finishedView(m)
 
 	default:
 		return ""
