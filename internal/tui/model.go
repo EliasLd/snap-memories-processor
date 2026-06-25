@@ -3,6 +3,7 @@ package tui
 import (
 	"os"
 
+	"github.com/EliasLd/snap-memories-processor/internal/model"
 	"github.com/charmbracelet/bubbles/filepicker"
 	tea "github.com/charmbracelet/bubbletea"
 )
@@ -19,7 +20,16 @@ type Model struct {
 	workers    int
 
 	inputPath  string
+	outputPath string
+
 	filepicker filepicker.Model
+
+	progressChan chan model.Progress
+
+	processed int
+	total     int
+
+	summary Summary
 }
 
 func (m *Model) resetFilepicker() tea.Cmd {
@@ -57,6 +67,7 @@ func InitialModel() Model {
 		workers:    16,
 		filepicker: fp,
 		inputPath:  inputDirPath,
+		outputPath: "./output",
 	}
 }
 
