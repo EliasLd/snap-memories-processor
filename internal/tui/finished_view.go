@@ -37,6 +37,11 @@ func finishedView(
 		),
 
 		"",
+		quoteStyle.Render(
+			"Results can be found here:",
+		),
+		"",
+
 		fullOutputPath,
 	)
 
