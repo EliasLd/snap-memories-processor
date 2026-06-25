@@ -2,6 +2,7 @@ package tui
 
 import (
 	"github.com/EliasLd/snap-memories-processor/internal/model"
+	"github.com/charmbracelet/bubbles/progress"
 	tea "github.com/charmbracelet/bubbletea"
 )
 
@@ -22,10 +23,35 @@ func Update(
 		m.processed = msg.Processed
 		m.total = msg.Total
 
+		if m.total > 0 {
+
+			percent := float64(m.processed) / float64(m.total)
+			cmd := m.progress.SetPercent(percent)
+
+			return m,
+				tea.Batch(
+					cmd,
+					WaitProgress(
+						m.progressChan,
+					),
+				)
+
+		}
+
 		return m,
 			WaitProgress(
 				m.progressChan,
 			)
+
+	case progress.FrameMsg:
+
+		var cmd tea.Cmd
+
+		pm, cmd := m.progress.Update(msg)
+
+		m.progress = pm.(progress.Model)
+
+		return m, cmd
 
 	case FinishedMsg:
 

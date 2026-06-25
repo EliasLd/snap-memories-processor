@@ -5,6 +5,7 @@ import (
 
 	"github.com/EliasLd/snap-memories-processor/internal/model"
 	"github.com/charmbracelet/bubbles/filepicker"
+	"github.com/charmbracelet/bubbles/progress"
 	tea "github.com/charmbracelet/bubbletea"
 )
 
@@ -23,6 +24,8 @@ type Model struct {
 	outputPath string
 
 	filepicker filepicker.Model
+
+	progress progress.Model
 
 	progressChan chan model.Progress
 
@@ -60,6 +63,10 @@ func InitialModel() Model {
 
 	inputDirPath, _ := os.Getwd()
 
+	p := progress.New(
+		progress.WithDefaultGradient(),
+	)
+
 	return Model{
 		state:      StateConfig,
 		focus:      FocusInput,
@@ -68,6 +75,7 @@ func InitialModel() Model {
 		filepicker: fp,
 		inputPath:  inputDirPath,
 		outputPath: "./output",
+		progress:   p,
 	}
 }
 
