@@ -33,6 +33,8 @@ type Model struct {
 	total     int
 
 	summary Summary
+
+	lastError error
 }
 
 func (m *Model) resetFilepicker() tea.Cmd {

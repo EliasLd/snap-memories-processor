@@ -27,4 +27,9 @@ var (
 	quoteStyle = lipgloss.NewStyle().
 			Italic(true).
 			Faint(true)
+
+	ErrorStyle = lipgloss.NewStyle().
+			Bold(true).
+			Foreground(lipgloss.Color("#ffffff")).
+			Background(lipgloss.Color("#ff0000"))
 )
