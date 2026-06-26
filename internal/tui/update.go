@@ -62,6 +62,7 @@ func Update(
 
 	case ErrorMsg:
 
+		m.lastError = msg.Err
 		m.state = StateError
 
 		return m, nil
@@ -94,6 +95,28 @@ func Update(
 		}
 
 		return m, cmd
+	}
+
+	if m.state == StateError {
+
+		switch msg := msg.(type) {
+
+		case tea.KeyMsg:
+
+			switch msg.String() {
+
+			case "enter":
+
+				m.lastError = nil
+				m.state = StateConfig
+
+			case "ctrl+c", "q":
+
+				return m, tea.Quit
+			}
+		}
+
+		return m, nil
 	}
 
 	// Config state
@@ -161,6 +184,17 @@ func Update(
 				m.gpsEnabled = !m.gpsEnabled
 
 			case FocusStart:
+
+				if err := ValidateConfiguration(
+					m.inputPath,
+					m.gpsEnabled,
+				); err != nil {
+
+					m.lastError = err
+					m.state = StateError
+
+					return m, nil
+				}
 
 				m.state = StateProcessing
 
