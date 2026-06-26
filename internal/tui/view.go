@@ -16,6 +16,9 @@ func View(m Model) string {
 	case StateFinished:
 		return finishedView(m)
 
+	case StateError:
+		return errorView(m)
+
 	default:
 		return ""
 	}
