@@ -5,6 +5,15 @@ import (
 	"os/exec"
 )
 
+func HasFFmpeg() bool {
+
+	_, err := exec.LookPath(
+		"ffmpeg",
+	)
+
+	return err == nil
+}
+
 func RunFFmpeg(args ...string) error {
 
 	cmd := exec.Command(
