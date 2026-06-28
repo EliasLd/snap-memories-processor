@@ -9,6 +9,14 @@ import (
 	"github.com/EliasLd/snap-memories-processor/internal/processor"
 )
 
+var program *tea.Program
+
+func SetProgram(
+	p *tea.Program,
+) {
+	program = p
+}
+
 func StartProcessing(
 	inputDir string,
 	gps bool,
@@ -25,6 +33,12 @@ func StartProcessing(
 			return ErrorMsg{Err: err}
 		}
 
+		program.Send(
+			PhaseMsg{
+				Phase: PhaseExtracting,
+			},
+		)
+
 		extractions, err := archive.ExtractAll(
 			archives,
 			"./tmp/extracted",
@@ -33,12 +47,24 @@ func StartProcessing(
 			return ErrorMsg{Err: err}
 		}
 
+		program.Send(
+			PhaseMsg{
+				Phase: PhaseBuildingCollection,
+			},
+		)
+
 		collection, err := memory.BuildCollection(
 			extractions,
 		)
 		if err != nil {
 			return ErrorMsg{Err: err}
 		}
+
+		program.Send(
+			PhaseMsg{
+				Phase: PhaseProcessing,
+			},
+		)
 
 		results := processor.ProcessAll(
 			collection,
