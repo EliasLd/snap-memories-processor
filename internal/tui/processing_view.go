@@ -14,45 +14,77 @@ func processingView(
 		"Processing Memories",
 	)
 
-	percent := 0.0
+	var status string
 
-	if m.total > 0 {
-		percent =
-			float64(m.processed) /
-				float64(m.total) * 100
+	switch m.phase {
+
+	case PhaseExtracting:
+
+		status = "Extracting Snapchat archives..."
+
+	case PhaseBuildingCollection:
+
+		status = "Reading Snapchat metadata..."
+
+	case PhaseProcessing:
+
+		status = "Processing memories..."
 	}
 
-	info := subtitleStyle.Render(
-		fmt.Sprintf(
-			"%d / %d files (%.1f%%)",
-			m.processed,
-			m.total,
-			percent,
-		),
+	status = subtitleStyle.Render(
+		status,
 	)
 
 	bar := m.progress.View()
 
-	content := lipgloss.JoinVertical(
-		lipgloss.Center,
-
+	content := []string{
 		Banner,
 
 		"",
 		title,
 
 		"",
-		bar,
+		status,
 
 		"",
-		info,
-	)
+		bar,
+	}
+
+	if m.phase == PhaseProcessing {
+
+		percent := 0.0
+
+		if m.total > 0 {
+
+			percent =
+				float64(m.processed) /
+					float64(m.total) * 100
+		}
+
+		info := subtitleStyle.Render(
+			fmt.Sprintf(
+				"%d / %d files (%.1f%%)",
+				m.processed,
+				m.total,
+				percent,
+			),
+		)
+
+		content = append(
+			content,
+			"",
+			info,
+		)
+	}
 
 	return lipgloss.Place(
 		m.width,
 		m.height,
 		lipgloss.Center,
 		lipgloss.Center,
-		content,
+		lipgloss.JoinVertical(
+			lipgloss.Center,
+			content...,
+		),
 	)
 }
