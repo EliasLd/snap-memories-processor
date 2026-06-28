@@ -43,6 +43,12 @@ func Update(
 				m.progressChan,
 			)
 
+	case PhaseMsg:
+
+		m.phase = msg.Phase
+
+		return m, nil
+
 	case progress.FrameMsg:
 
 		var cmd tea.Cmd
