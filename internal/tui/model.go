@@ -15,6 +15,8 @@ type Model struct {
 
 	state AppState
 
+	phase ProcessingPhase
+
 	focus Focus
 
 	gpsEnabled bool
@@ -71,6 +73,7 @@ func InitialModel() Model {
 
 	return Model{
 		state:      StateConfig,
+		phase:      PhaseExtracting,
 		focus:      FocusInput,
 		gpsEnabled: false,
 		workers:    16,
