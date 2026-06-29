@@ -11,6 +11,8 @@ func Start() error {
 		tea.WithMouseCellMotion(),
 	)
 
+	SetProgram(p)
+
 	if _, err := p.Run(); err != nil {
 		return err
 	}

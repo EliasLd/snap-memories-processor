@@ -12,3 +12,7 @@ type FinishedMsg struct {
 type ErrorMsg struct {
 	Err error
 }
+
+type PhaseMsg struct {
+	Phase ProcessingPhase
+}
