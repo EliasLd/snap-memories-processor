@@ -37,12 +37,20 @@ func finishedView(
 		),
 
 		"",
+
 		quoteStyle.Render(
 			"Results can be found here:",
 		),
+
 		"",
 
 		fullOutputPath,
+
+		"",
+
+		quoteStyle.Render(
+			"Press Enter to exit.",
+		),
 	)
 
 	return lipgloss.Place(
