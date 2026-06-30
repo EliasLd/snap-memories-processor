@@ -75,6 +75,27 @@ func Update(
 
 	}
 
+	if m.state == StateFinished {
+
+		switch msg := msg.(type) {
+
+		case tea.KeyMsg:
+
+			switch msg.String() {
+
+			case "enter",
+				"q",
+				"esc",
+				"backspace",
+				"ctrl+c":
+
+				return m, tea.Quit
+			}
+		}
+
+		return m, nil
+	}
+
 	if m.state == StateFilePicker {
 
 		switch msg := msg.(type) {
